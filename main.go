@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,12 +10,14 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/factory"
 	"github.com/arvinpaundra/ngekost-api/internal/http"
 	"github.com/arvinpaundra/ngekost-api/pkg/util/config"
-	"github.com/arvinpaundra/ngekost-api/pkg/util/log"
+	l "github.com/arvinpaundra/ngekost-api/pkg/util/log"
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-	f := factory.NewFactory()
+	ctx := context.Background()
+
+	f := factory.NewFactory(ctx)
 
 	app := fiber.New(fiber.Config{})
 
@@ -26,7 +29,7 @@ func main() {
 
 	go func(ch chan os.Signal) {
 		if err := app.Listen(config.GetString("APP_ADDR")); err != nil {
-			log.Logging(err.Error()).Error()
+			l.Logging(err.Error()).Error()
 
 			os.Exit(1)
 		}
@@ -34,6 +37,6 @@ func main() {
 		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	}(ch)
 
-	fmt.Println("application started")
+	log.Println("application started")
 	<-ch
 }
