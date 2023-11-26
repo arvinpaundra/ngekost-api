@@ -16,4 +16,5 @@ type Owner struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	User      User
+	Kosts     []Kost
 }
