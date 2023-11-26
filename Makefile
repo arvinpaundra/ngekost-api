@@ -14,9 +14,18 @@ run:
 	go run main.go
 
 build:
-	go build -o ./dist .
+	go build -o ./dist/main .
 
 image:
-	sudo docker build -t ngekost-api:latest .
+	sudo docker build -t arvinpaundra/ngekost-api:latest .
 
-.PHONY: createdb dropdb migrateup migratedown run build image
+container: image
+	sudo docker run --name ngekost-app -v ./.env:/.env -p 9012:9012 --rm arvinpaundra/ngekost-api:latest
+
+test:
+	go test -v -cover ./internal/app/...
+
+coverage:
+	go test -v -coverprofile=cover.out ./... && go tool cover -html=cover.out
+
+.PHONY: createdb dropdb migrateup migratedown run build image test testcoverage
