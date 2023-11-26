@@ -22,8 +22,6 @@ func getLimit(limit int) int {
 }
 
 func getPage(page int) int {
-	page += 1
-
 	if page < 1 {
 		return 1
 	}
@@ -41,9 +39,9 @@ func getTotalPages(total, limit int) int {
 	return int(totalPages)
 }
 
-// NewOffsetPagination common pagination technique using limit and offset
-func New(page, perPage, total int) *Pagination {
-	return &Pagination{
+// NewPagination common pagination technique using limit and offset
+func NewPagination(page, perPage, total int) Pagination {
+	return Pagination{
 		Page:       getPage(page),
 		PerPage:    getLimit(perPage),
 		TotalPages: getTotalPages(total, perPage),
