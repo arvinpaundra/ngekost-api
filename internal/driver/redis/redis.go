@@ -45,7 +45,7 @@ func (r *Redis) Connect(ctx context.Context) *redis.Client {
 	defer cancel()
 
 	if _, err := rdb.Ping(timeout).Result(); err != nil {
-		l.Logging(err.Error()).Error()
+		l.Logging().Error(err.Error())
 		os.Exit(1)
 	}
 

@@ -49,12 +49,12 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 
 	user, err := s.userRepository.FindByUsername(ctx, req.Username)
 	if err != nil && err != constant.ErrUserNotFound {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
 	if user != nil {
-		log.Logging(constant.ErrUsernameAlreadyUsed.Error()).Error()
+		log.Logging().Error(constant.ErrUsernameAlreadyUsed.Error())
 		return constant.ErrUsernameAlreadyUsed
 	}
 
@@ -68,10 +68,10 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 	err = s.userRepository.SaveWithTx(ctx, tx, &newUser)
 	if err != nil {
 		if errRollback := tx.Rollback().Error; errRollback != nil {
-			log.Logging(errRollback.Error()).Error()
+			log.Logging().Error(errRollback.Error())
 			return errRollback
 		}
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
@@ -90,10 +90,10 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 		err := s.ownerRepository.SaveWithTx(ctx, tx, &newOwner)
 		if err != nil {
 			if errRollback := tx.Rollback().Error; errRollback != nil {
-				log.Logging(errRollback.Error()).Error()
+				log.Logging().Error(errRollback.Error())
 				return errRollback
 			}
-			log.Logging(err.Error()).Error()
+			log.Logging().Error(err.Error())
 			return err
 		}
 	case "lessee":
@@ -110,22 +110,22 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 		err := s.lesseRepository.SaveWithTx(ctx, tx, &newLessee)
 		if err != nil {
 			if errRollback := tx.Rollback().Error; errRollback != nil {
-				log.Logging(errRollback.Error()).Error()
+				log.Logging().Error(errRollback.Error())
 				return errRollback
 			}
-			log.Logging(err.Error()).Error()
+			log.Logging().Error(err.Error())
 			return err
 		}
 	default:
 		if errRollback := tx.Rollback().Error; errRollback != nil {
-			log.Logging(errRollback.Error()).Error()
+			log.Logging().Error(errRollback.Error())
 			return errRollback
 		}
 		return constant.ErrInvalidRole
 	}
 
 	if errCommit := tx.Commit().Error; errCommit != nil {
-		log.Logging(errCommit.Error()).Error()
+		log.Logging().Error(errCommit.Error())
 		return errCommit
 	}
 
@@ -135,7 +135,7 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 func (s *service) Login(ctx context.Context, req *request.Login) (*response.Login, error) {
 	user, err := s.userRepository.FindByUsername(ctx, req.Username)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
@@ -155,7 +155,7 @@ func (s *service) Login(ctx context.Context, req *request.Login) (*response.Logi
 
 	accessToken, err := s.jsonWebToken.Encode(&accessTokenClaims)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
@@ -168,7 +168,7 @@ func (s *service) Login(ctx context.Context, req *request.Login) (*response.Logi
 
 	// refreshToken, err := s.jsonWebToken.Encode(&refreshTokenClaims)
 	// if err != nil {
-	// 	log.Logging(err.Error()).Error()
+	// 	log.Logging().Error(err.Error())
 	// 	return nil, err
 	// }
 
@@ -186,14 +186,14 @@ func (s *service) Login(ctx context.Context, req *request.Login) (*response.Logi
 
 	err = s.sessionRepository.Save(ctx, &session)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
 	key := "session::" + session.ID
 	err = s.cacheRepository.Save(ctx, key, session, time.Minute*30)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
@@ -213,14 +213,14 @@ func (s *service) Logout(ctx context.Context, req *request.Logout) error {
 	// check is user exist
 	_, err := s.userRepository.FindById(ctx, req.UserId)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
 	// check if session exist for current user
 	session, err := s.sessionRepository.FindByDeviceId(ctx, req.DeviceId)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
@@ -228,14 +228,14 @@ func (s *service) Logout(ctx context.Context, req *request.Logout) error {
 	key := "session::" + session.ID
 	err = s.cacheRepository.Del(ctx, key)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
 	// delete session from database
 	err = s.sessionRepository.DeleteById(ctx, session.ID)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 

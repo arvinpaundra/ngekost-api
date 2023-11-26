@@ -11,7 +11,7 @@ func GetString(key string) string {
 	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 	}
 
 	return viper.GetString(key)
@@ -23,7 +23,7 @@ func GetInt(key string) int {
 	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 	}
 
 	return viper.GetInt(key)
