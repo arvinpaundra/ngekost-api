@@ -48,7 +48,7 @@ func (p *Postgres) Connect(ctx context.Context) *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		l.Logging(err.Error()).Error()
+		l.Logging().Error(err.Error())
 		os.Exit(1)
 	}
 

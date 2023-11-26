@@ -21,13 +21,13 @@ func NewCacheRepository(client *redis.Client) contract.CacheRepository {
 func (c *cacheRepository) Save(ctx context.Context, key string, value any, ttl time.Duration) error {
 	v, err := json.Marshal(value)
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
 	err = c.client.Set(ctx, key, v, ttl).Err()
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 
@@ -38,12 +38,12 @@ func (c *cacheRepository) Get(ctx context.Context, key string) (*string, error) 
 	res, err := c.client.Get(ctx, key).Result()
 
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
 	if err == redis.Nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func (c *cacheRepository) Get(ctx context.Context, key string) (*string, error) 
 func (c *cacheRepository) Del(ctx context.Context, keys ...string) error {
 	err := c.client.Del(ctx, keys...).Err()
 	if err != nil {
-		log.Logging(err.Error()).Error()
+		log.Logging().Error(err.Error())
 		return err
 	}
 

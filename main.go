@@ -29,7 +29,7 @@ func main() {
 
 	go func(ch chan os.Signal) {
 		if err := app.Listen(config.GetString("APP_ADDR")); err != nil {
-			l.Logging(err.Error()).Error()
+			l.Logging().Error(err.Error())
 
 			os.Exit(1)
 		}
