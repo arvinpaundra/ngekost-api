@@ -77,12 +77,12 @@ func (o *ownerRepository) Find(ctx context.Context, keyword string) ([]*entity.O
 	return owners, nil
 }
 
-func (o *ownerRepository) FindById(ctx context.Context, userId string) (*entity.Owner, error) {
+func (o *ownerRepository) FindById(ctx context.Context, ownerId string) (*entity.Owner, error) {
 	var owner entity.Owner
 
 	err := o.db.WithContext(ctx).Model(&entity.Owner{}).
 		Joins("JOIN users ON owners.user_id = users.id").
-		Where("id = ?", userId).
+		Where("owners.id = ?", ownerId).
 		First(&owner).Error
 
 	if err != nil {

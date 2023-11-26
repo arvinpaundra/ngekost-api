@@ -55,6 +55,8 @@ func (c *client) HandlerLogin(f *fiber.Ctx) error {
 		return f.Status(fiber.StatusBadRequest).JSON(format.BadRequest("invalid request body", validationErrors))
 	}
 
+	req.IPAddress = f.IP()
+
 	res, err := c.service.Login(f.Context(), &req)
 
 	if err != nil {

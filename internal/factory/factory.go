@@ -6,8 +6,12 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/driver/contract"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres"
 	txBeginner "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/beginner"
+	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/kost"
+	kostrule "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/kostRule"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/lessee"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/owner"
+	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/room"
+	roomasset "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/roomAsset"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/session"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/user"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/redis"
@@ -16,13 +20,17 @@ import (
 )
 
 type Factory struct {
-	CacheRepository   contract.CacheRepository
-	TxBeginner        contract.TxBeginner
-	UserRepository    contract.UserRepository
-	OwnerRepository   contract.OwnerRepository
-	LesseeRepository  contract.LesseeRepository
-	SessionRepository contract.SessionRepository
-	JSONWebToken      token.JSONWebToken
+	JSONWebToken        token.JSONWebToken
+	CacheRepository     contract.CacheRepository
+	TxBeginner          contract.TxBeginner
+	UserRepository      contract.UserRepository
+	OwnerRepository     contract.OwnerRepository
+	LesseeRepository    contract.LesseeRepository
+	SessionRepository   contract.SessionRepository
+	KostRepository      contract.KostRepository
+	RoomRepository      contract.RoomRepository
+	KostRuleRepository  contract.KostRuleRepository
+	RoomAssetRepository contract.RoomAssetRepository
 }
 
 func NewFactory(ctx context.Context) *Factory {
@@ -30,12 +38,16 @@ func NewFactory(ctx context.Context) *Factory {
 	pg := postgres.New().Connect(ctx)
 
 	return &Factory{
-		JSONWebToken:      token.NewJWT(),
-		CacheRepository:   cache.NewCacheRepository(rdb),
-		TxBeginner:        txBeginner.NewTxBeginner(pg),
-		UserRepository:    user.NewAuthRepository(pg),
-		OwnerRepository:   owner.NewOwnerRepository(pg),
-		LesseeRepository:  lessee.NewLesseeRepository(pg),
-		SessionRepository: session.NewSessionRepository(pg),
+		JSONWebToken:        token.NewJWT(),
+		CacheRepository:     cache.NewCacheRepository(rdb),
+		TxBeginner:          txBeginner.NewTxBeginner(pg),
+		UserRepository:      user.NewAuthRepository(pg),
+		OwnerRepository:     owner.NewOwnerRepository(pg),
+		LesseeRepository:    lessee.NewLesseeRepository(pg),
+		SessionRepository:   session.NewSessionRepository(pg),
+		KostRepository:      kost.NewKostRepository(pg),
+		RoomRepository:      room.NewRoomRepository(pg),
+		KostRuleRepository:  kostrule.NewKostRuleRepository(pg),
+		RoomAssetRepository: roomasset.NewRoomAssetRepository(pg),
 	}
 }

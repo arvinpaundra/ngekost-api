@@ -3,3 +3,9 @@
 .env.development
 .env.staging
 .env.production
+
+# build
+dist/
+
+# test results
+cover.out

@@ -52,6 +52,9 @@ func formatErrorValidation(validationError error) ValidationError {
 			errFields[err.Field()] = "this field is required"
 		case "numeric":
 			errFields[err.Field()] = "only numeric format"
+		case "oneof":
+			values := strings.ReplaceAll(err.Param(), " ", ", ")
+			errFields[err.Field()] = fmt.Sprintf("must be one of %s", values)
 		default:
 			errFields[err.Field()] = err.Error()
 		}
