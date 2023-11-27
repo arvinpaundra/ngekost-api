@@ -10,6 +10,8 @@ var (
 	ErrRoomNotFound      = errors.New("room not found")
 	ErrRoomAssetNotFound = errors.New("room asset not found")
 	ErrKostRuleNotFound  = errors.New("kost rule not found")
+	ErrBillNotFound      = errors.New("bill not found")
+	ErrPaymentNotFound   = errors.New("payment not found")
 
 	ErrUsernameAlreadyUsed = errors.New("username already used")
 	ErrPasswordIncorrect   = errors.New("password is incorrect")
