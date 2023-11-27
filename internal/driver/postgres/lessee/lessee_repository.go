@@ -61,8 +61,8 @@ func (l *lesseeRepository) Find(ctx context.Context, keyword string) ([]*entity.
 		Scopes(
 			func(db *gorm.DB) *gorm.DB {
 				if keyword != "" {
-					db.Where(
-						db.Where("lessees.fullname LIKE ?", "%"+keyword+"%").Or("users.email LIKE ?", "%"+keyword+"%"),
+					return db.Where(
+						db.Where("lessees.fullname LIKE ?", "%"+keyword+"%").Or("users.username LIKE ?", "%"+keyword+"%"),
 					)
 				}
 				return db
@@ -103,8 +103,8 @@ func (l *lesseeRepository) Count(ctx context.Context, keyword string) (int, erro
 		Scopes(
 			func(db *gorm.DB) *gorm.DB {
 				if keyword != "" {
-					db.Where(
-						db.Where("lessees.fullname LIKE ?", "%"+keyword+"%").Or("users.email LIKE ?", "%"+keyword+"%"),
+					return db.Where(
+						db.Where("lessees.fullname LIKE ?", "%"+keyword+"%").Or("users.username LIKE ?", "%"+keyword+"%"),
 					)
 				}
 				return db

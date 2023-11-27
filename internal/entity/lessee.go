@@ -16,4 +16,5 @@ type Lessee struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	User      User
+	Bills     []Bill
 }

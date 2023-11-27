@@ -6,6 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.4.0
+	github.com/midtrans/midtrans-go v1.3.7
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.17.0
