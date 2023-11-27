@@ -61,8 +61,9 @@ func (o *ownerRepository) Find(ctx context.Context, keyword string) ([]*entity.O
 		Scopes(
 			func(db *gorm.DB) *gorm.DB {
 				if keyword != "" {
-					db.Where(
-						db.Where("owners.fullname LIKE ?", "%"+keyword+"%").Or("users.email LIKE ?", "%"+keyword+"%"),
+					return db.Where(
+						db.Where("owners.fullname LIKE ?", "%"+keyword+"%").
+							Or("users.username LIKE ?", "%"+keyword+"%"),
 					)
 				}
 				return db
@@ -103,8 +104,8 @@ func (o *ownerRepository) Count(ctx context.Context, keyword string) (int, error
 		Scopes(
 			func(db *gorm.DB) *gorm.DB {
 				if keyword != "" {
-					db.Where(
-						db.Where("owners.fullname LIKE ?", "%"+keyword+"%").Or("users.email LIKE ?", "%"+keyword+"%"),
+					return db.Where(
+						db.Where("owners.fullname LIKE ?", "%"+keyword+"%").Or("users.username LIKE ?", "%"+keyword+"%"),
 					)
 				}
 				return db
