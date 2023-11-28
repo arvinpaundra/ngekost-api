@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
+	"time"
 
 	"github.com/arvinpaundra/ngekost-api/internal/factory"
 	"github.com/arvinpaundra/ngekost-api/internal/http"
+	"github.com/arvinpaundra/ngekost-api/pkg/util/common"
 	"github.com/arvinpaundra/ngekost-api/pkg/util/config"
 	l "github.com/arvinpaundra/ngekost-api/pkg/util/log"
 	"github.com/gofiber/fiber/v2"
@@ -23,20 +23,19 @@ func main() {
 
 	http.NewHttp(app, f)
 
-	ch := make(chan os.Signal, 1)
-
-	defer close(ch)
-
-	go func(ch chan os.Signal) {
+	go func() {
 		if err := app.Listen(config.GetString("APP_ADDR")); err != nil {
 			l.Logging().Error(err.Error())
 
-			os.Exit(1)
+			os.Exit(0)
 		}
-
-		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	}(ch)
+	}()
 
 	log.Println("application started")
-	<-ch
+
+	wait := common.GracefulShutdown(ctx, 10*time.Second, app.ShutdownWithContext)
+
+	<-wait
+
+	log.Println("application stopped")
 }
