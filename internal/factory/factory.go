@@ -7,7 +7,6 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/driver/midtrans"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/midtrans/transaction"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres"
-	txBeginner "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/beginner"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/bill"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/kost"
 	kostrule "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/kostRule"
@@ -17,6 +16,7 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/room"
 	roomasset "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/roomAsset"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/session"
+	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/transactioner"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/user"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/redis"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/redis/cache"
@@ -27,6 +27,7 @@ type Factory struct {
 	JSONWebToken                  token.JSONWebToken
 	CacheRepository               contract.CacheRepository
 	MidtransTransactionRepository contract.MidtransTransactionRepository
+	Transactioner                 contract.Transactioner
 	TxBeginner                    contract.TxBeginner
 	UserRepository                contract.UserRepository
 	OwnerRepository               contract.OwnerRepository
@@ -49,7 +50,7 @@ func NewFactory(ctx context.Context) *Factory {
 		JSONWebToken:                  token.NewJWT(),
 		CacheRepository:               cache.NewCacheRepository(rdb),
 		MidtransTransactionRepository: transaction.NewTransactionRepository(sc),
-		TxBeginner:                    txBeginner.NewTxBeginner(pg),
+		Transactioner:                 transactioner.NewTransactioner(pg),
 		UserRepository:                user.NewAuthRepository(pg),
 		OwnerRepository:               owner.NewOwnerRepository(pg),
 		LesseeRepository:              lessee.NewLesseeRepository(pg),
