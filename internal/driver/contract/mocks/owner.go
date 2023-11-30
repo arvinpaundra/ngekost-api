@@ -7,8 +7,6 @@ import (
 
 	entity "github.com/arvinpaundra/ngekost-api/internal/entity"
 
-	gorm "gorm.io/gorm"
-
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -107,20 +105,6 @@ func (_m *OwnerRepository) Save(ctx context.Context, owner *entity.Owner) error 
 	return r0
 }
 
-// SaveWithTx provides a mock function with given fields: ctx, tx, owner
-func (_m *OwnerRepository) SaveWithTx(ctx context.Context, tx *gorm.DB, owner *entity.Owner) error {
-	ret := _m.Called(ctx, tx, owner)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *entity.Owner) error); ok {
-		r0 = rf(ctx, tx, owner)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Update provides a mock function with given fields: ctx, owner, ownerId
 func (_m *OwnerRepository) Update(ctx context.Context, owner *entity.Owner, ownerId string) error {
 	ret := _m.Called(ctx, owner, ownerId)
@@ -128,20 +112,6 @@ func (_m *OwnerRepository) Update(ctx context.Context, owner *entity.Owner, owne
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *entity.Owner, string) error); ok {
 		r0 = rf(ctx, owner, ownerId)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// UpdateWithTx provides a mock function with given fields: ctx, tx, owner, ownerId
-func (_m *OwnerRepository) UpdateWithTx(ctx context.Context, tx *gorm.DB, owner *entity.Owner, ownerId string) error {
-	ret := _m.Called(ctx, tx, owner, ownerId)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *entity.Owner, string) error); ok {
-		r0 = rf(ctx, tx, owner, ownerId)
 	} else {
 		r0 = ret.Error(0)
 	}
