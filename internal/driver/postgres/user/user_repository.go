@@ -26,15 +26,6 @@ func (u *userRepository) Save(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (u *userRepository) SaveWithTx(ctx context.Context, tx *gorm.DB, user *entity.User) error {
-	err := tx.WithContext(ctx).Model(&entity.User{}).Create(&user).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (u *userRepository) FindByUsername(ctx context.Context, username string) (*entity.User, error) {
 	var user entity.User
 

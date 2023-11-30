@@ -24,8 +24,8 @@ type Service interface {
 
 type service struct {
 	jsonWebToken      token.JSONWebToken
+	transactioner     contract.Transactioner
 	cacheRepository   contract.CacheRepository
-	txBeginner        contract.TxBeginner
 	userRepository    contract.UserRepository
 	ownerRepository   contract.OwnerRepository
 	lesseRepository   contract.LesseeRepository
@@ -35,8 +35,8 @@ type service struct {
 func NewService(f *factory.Factory) Service {
 	return &service{
 		jsonWebToken:      f.JSONWebToken,
+		transactioner:     f.Transactioner,
 		cacheRepository:   f.CacheRepository,
-		txBeginner:        f.TxBeginner,
 		userRepository:    f.UserRepository,
 		ownerRepository:   f.OwnerRepository,
 		lesseRepository:   f.LesseeRepository,
@@ -45,7 +45,11 @@ func NewService(f *factory.Factory) Service {
 }
 
 func (s *service) Register(ctx context.Context, req *request.Register) error {
-	tx := s.txBeginner.Begin()
+	tx, err := s.transactioner.Begin(ctx)
+	if err != nil {
+		log.Logging().Error(err.Error())
+		return err
+	}
 
 	user, err := s.userRepository.FindByUsername(ctx, req.Username)
 	if err != nil && err != constant.ErrUserNotFound {
@@ -65,9 +69,9 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 		Role:     req.Role,
 	}
 
-	err = s.userRepository.SaveWithTx(ctx, tx, &newUser)
+	err = tx.UserRepository().Save(ctx, &newUser)
 	if err != nil {
-		if errRollback := tx.Rollback().Error; errRollback != nil {
+		if errRollback := tx.Rollback(); errRollback != nil {
 			log.Logging().Error(errRollback.Error())
 			return errRollback
 		}
@@ -87,9 +91,9 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 			City:     req.City,
 		}
 
-		err := s.ownerRepository.SaveWithTx(ctx, tx, &newOwner)
+		err := tx.OwnerRepository().Save(ctx, &newOwner)
 		if err != nil {
-			if errRollback := tx.Rollback().Error; errRollback != nil {
+			if errRollback := tx.Rollback(); errRollback != nil {
 				log.Logging().Error(errRollback.Error())
 				return errRollback
 			}
@@ -107,9 +111,9 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 			Address:  req.Address,
 		}
 
-		err := s.lesseRepository.SaveWithTx(ctx, tx, &newLessee)
+		err := tx.LesseeRepository().Save(ctx, &newLessee)
 		if err != nil {
-			if errRollback := tx.Rollback().Error; errRollback != nil {
+			if errRollback := tx.Rollback(); errRollback != nil {
 				log.Logging().Error(errRollback.Error())
 				return errRollback
 			}
@@ -117,14 +121,14 @@ func (s *service) Register(ctx context.Context, req *request.Register) error {
 			return err
 		}
 	default:
-		if errRollback := tx.Rollback().Error; errRollback != nil {
+		if errRollback := tx.Rollback(); errRollback != nil {
 			log.Logging().Error(errRollback.Error())
 			return errRollback
 		}
 		return constant.ErrInvalidRole
 	}
 
-	if errCommit := tx.Commit().Error; errCommit != nil {
+	if errCommit := tx.Commit(); errCommit != nil {
 		log.Logging().Error(errCommit.Error())
 		return errCommit
 	}

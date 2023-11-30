@@ -35,24 +35,6 @@ func (l *lesseeRepository) Update(ctx context.Context, lessee *entity.Lessee, le
 	return nil
 }
 
-func (l *lesseeRepository) SaveWithTx(ctx context.Context, tx *gorm.DB, lessee *entity.Lessee) error {
-	err := tx.WithContext(ctx).Model(&entity.Lessee{}).Create(&lessee).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (l *lesseeRepository) UpdateWithTx(ctx context.Context, tx *gorm.DB, lessee *entity.Lessee, lesseeId string) error {
-	err := tx.WithContext(ctx).Model(&entity.Lessee{}).Where("id = ?", lesseeId).Updates(&lessee).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (l *lesseeRepository) Find(ctx context.Context, keyword string) ([]*entity.Lessee, error) {
 	var lessees []*entity.Lessee
 

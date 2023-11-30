@@ -35,24 +35,6 @@ func (o *ownerRepository) Update(ctx context.Context, owner *entity.Owner, owner
 	return nil
 }
 
-func (o *ownerRepository) SaveWithTx(ctx context.Context, tx *gorm.DB, owner *entity.Owner) error {
-	err := tx.WithContext(ctx).Model(&entity.Owner{}).Create(&owner).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (o *ownerRepository) UpdateWithTx(ctx context.Context, tx *gorm.DB, owner *entity.Owner, ownerId string) error {
-	err := tx.WithContext(ctx).Model(&entity.Owner{}).Where("id = ?", ownerId).Updates(&owner).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (o *ownerRepository) Find(ctx context.Context, keyword string) ([]*entity.Owner, error) {
 	var owners []*entity.Owner
 

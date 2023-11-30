@@ -35,24 +35,6 @@ func (s *sessionRepository) Update(ctx context.Context, session *entity.Session,
 	return nil
 }
 
-func (s *sessionRepository) SaveWithTx(ctx context.Context, tx *gorm.DB, session *entity.Session) error {
-	err := tx.WithContext(ctx).Model(&entity.Session{}).Create(&session).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *sessionRepository) UpdateWithTx(ctx context.Context, tx *gorm.DB, session *entity.Session, sessionId string) error {
-	err := tx.WithContext(ctx).Model(&entity.Session{}).Where("id = ?", sessionId).Updates(&session).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (s *sessionRepository) FindByUserId(ctx context.Context, userId string) ([]*entity.Session, error) {
 	var sessions []*entity.Session
 	err := s.db.WithContext(ctx).Model(&entity.Session{}).
