@@ -122,6 +122,22 @@ func (_m *Transaction) PaymentRepository() contract.PaymentRepository {
 	return r0
 }
 
+// RentRepository provides a mock function with given fields:
+func (_m *Transaction) RentRepository() contract.RentRepository {
+	ret := _m.Called()
+
+	var r0 contract.RentRepository
+	if rf, ok := ret.Get(0).(func() contract.RentRepository); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(contract.RentRepository)
+		}
+	}
+
+	return r0
+}
+
 // Rollback provides a mock function with given fields:
 func (_m *Transaction) Rollback() error {
 	ret := _m.Called()
