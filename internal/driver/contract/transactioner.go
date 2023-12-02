@@ -24,4 +24,5 @@ type Transaction interface {
 	KostRuleRepository() KostRuleRepository
 	BillRepository() BillRepository
 	PaymentRepository() PaymentRepository
+	RentRepository() RentRepository
 }
