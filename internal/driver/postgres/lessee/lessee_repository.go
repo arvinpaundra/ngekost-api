@@ -59,17 +59,17 @@ func (l *lesseeRepository) Find(ctx context.Context, keyword string) ([]*entity.
 	return lessees, nil
 }
 
-func (l *lesseeRepository) FindById(ctx context.Context, userId string) (*entity.Lessee, error) {
+func (l *lesseeRepository) FindById(ctx context.Context, lesseId string) (*entity.Lessee, error) {
 	var lessee entity.Lessee
 
 	err := l.db.WithContext(ctx).Model(&entity.Lessee{}).
 		Joins("JOIN users ON lessees.user_id = users.id").
-		Where("id = ?", userId).
+		Where("lessees.id = ?", lesseId).
 		First(&lessee).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, constant.ErrOwnerNotFound
+			return nil, constant.ErrLesseeNotFound
 		}
 		return nil, err
 	}
