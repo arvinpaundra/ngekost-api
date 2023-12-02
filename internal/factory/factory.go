@@ -13,6 +13,7 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/lessee"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/owner"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/payment"
+	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/rent"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/room"
 	roomasset "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/roomAsset"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/session"
@@ -39,6 +40,7 @@ type Factory struct {
 	RoomAssetRepository           contract.RoomAssetRepository
 	BillRepository                contract.BillRepository
 	PaymentRepository             contract.PaymentRepository
+	RentRepository                contract.RentRepository
 }
 
 func NewFactory(ctx context.Context) *Factory {
@@ -61,5 +63,6 @@ func NewFactory(ctx context.Context) *Factory {
 		RoomAssetRepository:           roomasset.NewRoomAssetRepository(pg),
 		BillRepository:                bill.NewBillRepository(pg),
 		PaymentRepository:             payment.NewPaymentRepository(pg),
+		RentRepository:                rent.NewRentRepository(pg),
 	}
 }
