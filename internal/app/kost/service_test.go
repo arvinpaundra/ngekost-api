@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/arvinpaundra/ngekost-api/internal/adapter/request"
 	k "github.com/arvinpaundra/ngekost-api/internal/app/kost"
@@ -27,6 +28,7 @@ var (
 	roomRepository     mocks.RoomRepository
 	kostRuleRepository mocks.KostRuleRepository
 	ownerRepository    mocks.OwnerRepository
+	rentRepository     mocks.RentRepository
 
 	service k.Service
 
@@ -36,10 +38,12 @@ var (
 	roomPath   request.RoomPathParam
 	rulePath   request.KostRulePathParam
 
-	kost  entity.Kost
-	rule  entity.KostRule
-	room  entity.Room
-	owner entity.Owner
+	kost   entity.Kost
+	rule   entity.KostRule
+	room   entity.Room
+	owner  entity.Owner
+	lessee entity.Lessee
+	rent   entity.Rent
 
 	ctx context.Context
 )
@@ -51,6 +55,7 @@ func initDataService() {
 		KostRepository:     &kostRepository,
 		RoomRepository:     &roomRepository,
 		KostRuleRepository: &kostRuleRepository,
+		RentRepository:     &rentRepository,
 	}
 
 	service = k.NewService(&f)
@@ -58,6 +63,19 @@ func initDataService() {
 	ctx = context.Background()
 
 	owner = entity.Owner{
+		ID:        common.GetID(),
+		UserId:    common.GetID(),
+		Fullname:  "test",
+		Gender:    "test",
+		Phone:     "test",
+		Address:   "test",
+		City:      "test",
+		Birthdate: nil,
+		Status:    nil,
+		Photo:     nil,
+	}
+
+	lessee = entity.Lessee{
 		ID:        common.GetID(),
 		UserId:    common.GetID(),
 		Fullname:  "test",
@@ -103,6 +121,16 @@ func initDataService() {
 		Title:       "test",
 		Priority:    "test",
 		Description: nil,
+	}
+
+	rent = entity.Rent{
+		ID:        common.GetID(),
+		RoomId:    room.ID,
+		LesseeId:  common.GetID(),
+		StartDate: time.Now(),
+		EndDate:   nil,
+		Room:      room,
+		Lessee:    lessee,
 	}
 
 	createKost = request.CreateKost{
@@ -515,6 +543,72 @@ func TestFindRulesByKost(t *testing.T) {
 
 				assert.Error(t, err)
 				assert.Empty(t, res)
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, test.fn)
+	}
+}
+
+func TestFindLesseesByKostId(t *testing.T) {
+	tests := []ServiceTableTest{
+		{
+			name: "success",
+			fn: func(t *testing.T) {
+				kostRepository.On("FindById", ctx, kost.ID).Return(&kost, nil).Once()
+
+				rentRepository.On("FindByKostId", ctx, kost.ID, &query).Return([]*entity.Rent{&rent}, nil).Once()
+
+				rentRepository.On("CountByKostId", ctx, kost.ID, &query).Return(1, nil).Once()
+
+				res, err := service.FindLesseesByKostId(ctx, kost.ID, &query)
+
+				assert.NoError(t, err)
+				assert.NotEmpty(t, res)
+			},
+		},
+		{
+			name: "kost not found",
+			fn: func(t *testing.T) {
+				kostRepository.On("FindById", ctx, kost.ID).Return(nil, constant.ErrKostNotFound).Once()
+
+				res, err := service.FindLesseesByKostId(ctx, kost.ID, &query)
+
+				assert.Error(t, err)
+				assert.Empty(t, res)
+				assert.EqualError(t, err, constant.ErrKostNotFound.Error())
+			},
+		},
+		{
+			name: "error retrieve rents from db",
+			fn: func(t *testing.T) {
+				kostRepository.On("FindById", ctx, kost.ID).Return(&kost, nil).Once()
+
+				rentRepository.On("FindByKostId", ctx, kost.ID, &query).Return(nil, errors.New("failed")).Once()
+
+				res, err := service.FindLesseesByKostId(ctx, kost.ID, &query)
+
+				assert.Error(t, err)
+				assert.Empty(t, res)
+				assert.EqualError(t, err, "failed")
+			},
+		},
+		{
+			name: "error retrieve amount of rents from db",
+			fn: func(t *testing.T) {
+				kostRepository.On("FindById", ctx, kost.ID).Return(&kost, nil).Once()
+
+				rentRepository.On("FindByKostId", ctx, kost.ID, &query).Return([]*entity.Rent{&rent}, nil).Once()
+
+				rentRepository.On("CountByKostId", ctx, kost.ID, &query).Return(0, errors.New("failed")).Once()
+
+				res, err := service.FindLesseesByKostId(ctx, kost.ID, &query)
+
+				assert.Error(t, err)
+				assert.Empty(t, res)
+				assert.EqualError(t, err, "failed")
 			},
 		},
 	}
