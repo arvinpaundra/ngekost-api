@@ -23,6 +23,7 @@ type Service interface {
 	FindById(ctx context.Context, kostId string) (*response.Kost, error)
 	FindRoomsByKost(ctx context.Context, path *request.RoomPathParam, query *request.Common) (*response.WithPagination, error)
 	FindRulesByKost(ctx context.Context, path *request.KostRulePathParam, query *request.Common) ([]*response.KostRule, error)
+	FindLesseesByKostId(ctx context.Context, kostId string, query *request.Common) (*response.WithPagination, error)
 }
 
 type service struct {
@@ -31,6 +32,7 @@ type service struct {
 	roomRepository     contract.RoomRepository
 	kostRuleRepository contract.KostRuleRepository
 	ownerRepository    contract.OwnerRepository
+	rentRepository     contract.RentRepository
 }
 
 func NewService(f *factory.Factory) Service {
@@ -40,6 +42,7 @@ func NewService(f *factory.Factory) Service {
 		roomRepository:     f.RoomRepository,
 		kostRuleRepository: f.KostRuleRepository,
 		ownerRepository:    f.OwnerRepository,
+		rentRepository:     f.RentRepository,
 	}
 }
 
@@ -216,4 +219,31 @@ func (s *service) FindRulesByKost(ctx context.Context, path *request.KostRulePat
 	}
 
 	return response.ToResponseKostRules(rules), nil
+}
+
+func (s *service) FindLesseesByKostId(ctx context.Context, kostId string, query *request.Common) (*response.WithPagination, error) {
+	_, err := s.kostRepository.FindById(ctx, kostId)
+	if err != nil {
+		log.Logging().Error(err.Error())
+		return nil, err
+	}
+
+	rents, err := s.rentRepository.FindByKostId(ctx, kostId, query)
+	if err != nil {
+		log.Logging().Error(err.Error())
+		return nil, err
+	}
+
+	total, err := s.rentRepository.CountByKostId(ctx, kostId, query)
+	if err != nil {
+		log.Logging().Error(err.Error())
+		return nil, err
+	}
+
+	res := response.WithPagination{
+		Results:    response.ToResponseKostRenters(rents),
+		Pagination: format.NewPagination(query.Offset, query.Limit, total),
+	}
+
+	return &res, nil
 }
