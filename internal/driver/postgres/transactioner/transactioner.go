@@ -11,6 +11,7 @@ import (
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/lessee"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/owner"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/payment"
+	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/rent"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/room"
 	roomasset "github.com/arvinpaundra/ngekost-api/internal/driver/postgres/roomAsset"
 	"github.com/arvinpaundra/ngekost-api/internal/driver/postgres/session"
@@ -95,4 +96,8 @@ func (t *transaction) BillRepository() contract.BillRepository {
 
 func (t *transaction) PaymentRepository() contract.PaymentRepository {
 	return payment.NewPaymentRepository(t.db)
+}
+
+func (t *transaction) RentRepository() contract.RentRepository {
+	return rent.NewRentRepository(t.db)
 }
