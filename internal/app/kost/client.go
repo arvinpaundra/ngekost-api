@@ -193,3 +193,26 @@ func (c *Client) HandlerFindRulesByKost(f *fiber.Ctx) error {
 
 	return f.Status(fiber.StatusOK).JSON(format.SuccessOK("success get rules of kost", res))
 }
+
+func (c *Client) HandlerFindLesseesByKost(f *fiber.Ctx) error {
+	kostId := f.Params("kost_id")
+
+	query := request.Common{
+		Limit:  f.QueryInt("per_page", 10),
+		Offset: f.QueryInt("page", 1),
+		Search: f.Query("search"),
+	}
+
+	res, err := c.service.FindLesseesByKostId(f.Context(), kostId, &query)
+
+	if err != nil {
+		switch err {
+		case constant.ErrKostNotFound:
+			return f.Status(fiber.StatusNotFound).JSON(format.NotFound(err.Error()))
+		default:
+			return f.Status(fiber.StatusInternalServerError).JSON(format.InternalServerError(err.Error()))
+		}
+	}
+
+	return f.Status(fiber.StatusOK).JSON(format.SuccessOK("success get lessees by kost", res.Results, res.Pagination))
+}
